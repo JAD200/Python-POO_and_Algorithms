@@ -1,5 +1,20 @@
 class Coordenada:
+    """ superclass Coordenada
+    Constructor
+        x = x
+        y = y
 
+    Methods:
+        distancia
+            Calculates the distance from one coordinate to another coordinate given
+            Args:
+                x_diff :int
+                y_diff :int
+                otra_coordenada : int
+            Returns:
+                (x_diff + y_diff)**0.5
+
+    """
     def __init__(self, x, y):
         self.x = x
         self.y = y
