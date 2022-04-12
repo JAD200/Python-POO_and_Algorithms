@@ -16,7 +16,7 @@ def bubble_sort(list):
 if __name__ == '__main__':
     list_size = int(input('De que tamaño es la lista? '))
 
-    list = [random.randint(0, 1000) for i in range(list_size)]
+    list = [random.randint(0, 100) for i in range(list_size)]
     print(list)
 
     list_sorted = bubble_sort(list)
