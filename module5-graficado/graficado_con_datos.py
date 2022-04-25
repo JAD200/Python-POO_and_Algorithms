@@ -1,7 +1,7 @@
 # Bokeh
 from bokeh.plotting import figure, output_file, show, save
 from bokeh.models import ColumnDataSource
-from bokeh.models.tools import HoverTool
+from bokeh.models.tools import HoverTool, PanTool
 from bokeh.transform import factor_cmap
 from bokeh.palettes import PuOr
 # Pandas
@@ -10,7 +10,6 @@ from bokeh.palettes import PuOr
 from data import provinces, dates, data
 
 #   Todo
-##  Show a legend with all the dates and another with all the provinces
 ##  Erease the metrics of x axis and improve the annotations
 ##  Show a hover with detailed information
 
@@ -33,16 +32,16 @@ if __name__ == '__main__':
 
 #*   Add plot
     graph = figure(
-        x_range=provinces,
-        plot_height=650,
-        plot_width=900,
-        title='Women salary',
-        title_location='above',
-        x_axis_label='Provinces',
-        y_axis_label='Salaries',
         background_fill_color='#3A3845',
-        toolbar_location='above',
-        tools='pan,wheel_zoom,save,reset',
+        plot_height=750,
+        plot_width=1000,
+        title_location='above',
+        title='Women salary',
+        tools='save, reset, hover',
+        tooltips = 'Fecha: $name',
+        x_axis_label='Provinces',
+        x_range=provinces,
+        y_axis_label='Salaries',
     )
 
 #*   Render glyph
@@ -52,17 +51,26 @@ if __name__ == '__main__':
         width=0.9,
         color=PuOr[len(dates)],
         fill_alpha=0.9,
+        legend_label=dates,
         source=source
     )
 
 #   Plot arrangements
     graph.y_range.start = 0
-    graph.x_range.range_padding = 0.1
+    graph.x_range.range_padding = 0.07
     graph.xgrid.grid_line_color = None
     graph.ygrid.grid_line_color = None
     graph.axis.minor_tick_line_color = None
     graph.outline_line_color = None
+
+#   Toolbar
     # graph.add_tools(hover)
+    graph.add_tools(PanTool(dimensions='width'))
+    graph.toolbar.autohide = True
+
+#   Legend
+    graph.legend.location = "top_left"
+    graph.legend.orientation = "horizontal"
 
 
 #?   Show or save results
