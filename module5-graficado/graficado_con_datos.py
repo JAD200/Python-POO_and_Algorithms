@@ -1,16 +1,14 @@
 # Bokeh
 from bokeh.plotting import figure, output_file, show, save
-from bokeh.models import ColumnDataSource
+from bokeh.models import ColumnDataSource, Legend, LegendItem
 from bokeh.models.tools import HoverTool, PanTool
-from bokeh.transform import factor_cmap
-from bokeh.palettes import PuOr
+from bokeh.palettes import viridis
 # Pandas
 # import pandas
 # Data
 from data import provinces, dates, data
 
 #   Todo
-##  Erease the metrics of x axis and improve the annotations
 ##  Show a hover with detailed information
 
 
@@ -19,58 +17,61 @@ if __name__ == '__main__':
 
 #*   CSV
     # Read in csv
-    # data_frame = pandas.read_csv('w_mean_tests.csv')
-    data_frame = data
+    # df = pandas.read_csv('w_mean_complete.csv')
 
-    # Create ColumnDataSource from data frame
-    source = ColumnDataSource(data_frame)
+    # # Create ColumnDataSource from data frame
+    # source = ColumnDataSource(df)
 
     output_file('women_salary.html')
 
-    # date list
-    # date = source.data['fecha'].tolist()
 
 #*   Add plot
     graph = figure(
-        background_fill_color='#3A3845',
+        background_fill_color='#595260',
         plot_height=750,
-        plot_width=1000,
+        plot_width=1400,
         title_location='above',
         title='Women salary',
-        tools='save, reset, hover',
-        tooltips = 'Fecha: $name',
-        x_axis_label='Provinces',
-        x_range=provinces,
-        y_axis_label='Salaries',
+        tools='save, reset',
+        x_axis_label='Salaries',
+        y_range=dates,
+        y_axis_label='Dates',
     )
 
 #*   Render glyph
-    graph.vbar_stack(
-        dates,
-        x='provinces',
-        width=0.9,
-        color=PuOr[len(dates)],
+    graph.hbar_stack(
+        provinces,
+        y='dates',
+        height=0.9,
+        color=viridis(len(provinces)),
         fill_alpha=0.9,
-        legend_label=dates,
-        source=source
+        legend_label=provinces,
+        source=data,
     )
 
 #   Plot arrangements
-    graph.y_range.start = 0
-    graph.x_range.range_padding = 0.07
+    graph.y_range.range_padding = 0.07
+    graph.x_range.range_padding = 0.68
     graph.xgrid.grid_line_color = None
     graph.ygrid.grid_line_color = None
     graph.axis.minor_tick_line_color = None
     graph.outline_line_color = None
 
 #   Toolbar
-    # graph.add_tools(hover)
+    hover = HoverTool()
+    hover.tooltips = [
+        ('Provincia:', '$name'),
+        ('Fecha:', '@dates'),
+        # ('Salarios:', '$y{0,0.0}')
+    ]
+    graph.add_tools(hover)
     graph.add_tools(PanTool(dimensions='width'))
     graph.toolbar.autohide = True
 
 #   Legend
     graph.legend.location = "top_left"
-    graph.legend.orientation = "horizontal"
+    graph.legend.click_policy="mute"
+    graph.legend.orientation = "vertical"
 
 
 #?   Show or save results
