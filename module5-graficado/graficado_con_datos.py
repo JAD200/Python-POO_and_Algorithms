@@ -6,11 +6,8 @@ from bokeh.models import Legend, LegendItem
 from bokeh.models.tools import HoverTool, PanTool
 from bokeh.transform import cumsum
 from bokeh.palettes import viridis
-#? Pandas
-import pandas
-
-#   Todo
-##  Show legend with all the provinces
+#? pandas
+import pandas as pd
 
 
 if __name__ == '__main__':
@@ -18,45 +15,48 @@ if __name__ == '__main__':
 
 #*   CSV
     # Read in csv
-    df = pandas.read_csv('./w_mean_complete.csv', usecols=['provinces' , 'salaries'])
-    print('\n', df.info())
-    # Create ColumnDataSource from data frame
+    df = pd.read_csv('./w_mean_complete.csv', usecols=['provinces' , 'salaries'])
+
 
     output_file('women_salary.html')
 
 
-    # Group by provinces and sum up the salaries
+#*   Prepare information
+##   Group by provinces and sum up the salaries
     total_salaries = df.groupby('provinces')['salaries'].apply(sum)
 
-    # Set provinces for the legend and color palette
+##   Set provinces for the legend and color palette
     provinces = df['provinces']
     provinces = set(provinces)# Remove duplicates
     provinces = sorted(provinces)# Sort provinces
 
-    # Show dataframes
-    # print(total_salaries, '\n -' * 2)
-    # print(provinces, '\n -' * 2)
-
-    # Prepare data for the graph
-    data = pandas.Series(total_salaries).reset_index(name='value').rename(columns={'index': 'province'})
+##   Organise data for the graph
+    data = pd.Series(total_salaries).reset_index(name='value').rename(columns={'index': 'province'})
     data['angle'] = data['value']/data['value'].sum() * 2*pi
     data['color'] = viridis(len(provinces))
+    data['labels'] = data['provinces']
+
+##?   Show dataframes
+    # print('\n', df.info())
+    # print(total_salaries, '\n -' * 2)
+    # print(provinces, '\n -' * 2)
 
 
 #*   Add plot
     graph = figure(
         background_fill_color='#BFAE8E',
-        plot_height=700,
-        plot_width=700,
+        min_border=0,
+        plot_height=750,
+        plot_width=760,
         title_location='above',
         title='Women salary \nOrdered by province',
         tools='save, reset',
     )
 
 #*   Render glyph
-    graph.wedge(x=0, y=1, radius=0.6,
+    graph.wedge(x=0, y=3, radius=0.6,
         start_angle=cumsum('angle', include_zero=True), end_angle=cumsum('angle'),
-        line_color="white", fill_color='color', source=data)
+        line_color="white", fill_color='color', legend_group='provinces', source=data)
 
 #   Plot arrangements
     graph.axis.minor_tick_line_color = None
@@ -66,8 +66,7 @@ if __name__ == '__main__':
     graph.title.background_fill_color = '#F2EFDF'
     graph.title.text_color = '#278C5D'
     graph.title.text_font_size = '25px'
-    graph.x_range.range_padding = 0.68
-    graph.y_range.range_padding = 0.07
+
 
 #*   Annotations
 ##   Toolbar
@@ -81,9 +80,13 @@ if __name__ == '__main__':
     graph.toolbar.autohide = True
 
 ##   Legend
-    # graph.legend.location = 'top_left'
-    # graph.legend.click_policy='mute'
-    # graph.legend.orientation = 'vertical'
+    graph.legend.background_fill_color = '#F2EFDF'
+    graph.legend.location = 'top_left'
+    graph.legend.orientation = 'vertical'
+    graph.legend.title = 'Provinces'
+    graph.legend.background_fill_alpha = 0.4
+    graph.legend.title_text_color = '#278C5D'
+    graph.legend.title_text_font_size = '15pt'
 
 
 #?   Show or save results
